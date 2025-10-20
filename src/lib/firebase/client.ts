@@ -5,12 +5,13 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id",
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'your-project-id.firebaseapp.com',
+  projectId: 'your-project-id',
+  storageBucket: 'your-project-id.appspot.com',
+  messagingSenderId: 'your-sender-id',
+  appId: 'your-app-id',
+  measurementId: 'your-measurement-id',
 };
 
 // Initialize Firebase
