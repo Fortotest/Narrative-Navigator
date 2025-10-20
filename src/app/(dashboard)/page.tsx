@@ -1,22 +1,45 @@
+'use client';
+
 import { getMarketData } from '@/lib/coingecko';
 import { getWatchlist } from '@/lib/firebase/firestore';
 import { MarketTable } from '@/components/dashboard/MarketTable';
 import { NarrativeSuggestions } from '@/components/dashboard/NarrativeSuggestions';
-import { auth } from '@/lib/firebase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
+import type { Coin } from '@/types';
+import { Spinner } from '@/components/ui/spinner';
 
-export const dynamic = 'force-dynamic';
+export default function DashboardPage() {
+  const { user } = useAuth();
+  const [marketData, setMarketData] = useState<Coin[]>([]);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function DashboardPage() {
-  // This is a server component, but auth() from next-auth would be better here.
-  // With firebase, we have to rely on the client-side check in the layout for now.
-  // A server-side session management would be needed for a fully secure server component data fetch based on user.
-  // For this example, we'll assume the client-side auth guard is sufficient.
-  // We can get the user from a server session if we implement it.
-  // For now, let's get it on the client in the components that need it.
-  
-  const marketData = await getMarketData();
-  const user = auth.currentUser;
-  const watchlist = user ? await getWatchlist(user.uid) : [];
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [market, watch] = await Promise.all([
+          getMarketData(),
+          user ? getWatchlist(user.uid) : Promise.resolve([]),
+        ]);
+        setMarketData(market);
+        setWatchlist(watch);
+      } catch (e) {
+        console.error("Failed to fetch dashboard data", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex h-[calc(100vh-10rem)] items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">

@@ -1,4 +1,3 @@
-import 'server-only';
 import { Coin } from '@/types';
 
 const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';

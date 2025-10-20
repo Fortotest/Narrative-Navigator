@@ -1,19 +1,60 @@
+'use client';
+
 import { getCoinData } from '@/lib/coingecko';
 import { getWatchlist } from '@/lib/firebase/firestore';
-import { auth } from '@/lib/firebase/client';
 import { WatchlistClient } from '@/components/watchlist/WatchlistClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Star } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useState } from 'react';
+import type { Coin } from '@/types';
+import { Spinner } from '@/components/ui/spinner';
 
-export const dynamic = 'force-dynamic';
+export default function WatchlistPage() {
+  const { user } = useAuth();
+  const [watchlistData, setWatchlistData] = useState<Coin[]>([]);
+  const [watchlistIds, setWatchlistIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function WatchlistPage() {
-  const user = auth.currentUser;
+  useEffect(() => {
+    async function fetchWatchlist() {
+      if (user) {
+        setLoading(true);
+        try {
+          const ids = await getWatchlist(user.uid);
+          setWatchlistIds(ids);
+          if (ids.length > 0) {
+            const data = await getCoinData(ids);
+            setWatchlistData(data);
+          } else {
+            setWatchlistData([]);
+          }
+        } catch (e) {
+          console.error("Failed to fetch watchlist", e)
+          setWatchlistData([]);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+        setWatchlistData([]);
+        setWatchlistIds([]);
+      }
+    }
+    fetchWatchlist();
+  }, [user]);
+
+  if (loading) {
+    return (
+       <div className="flex h-[calc(100vh-10rem)] items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
 
   if (!user) {
-    // This should technically not be reached due to layout protection, but as a safeguard:
     return (
       <Card>
         <CardHeader>
@@ -26,12 +67,9 @@ export default async function WatchlistPage() {
     );
   }
 
-  const watchlistIds = await getWatchlist(user.uid);
-  const watchlistData = await getCoinData(watchlistIds);
-
   if (watchlistData.length === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-[calc(100vh-10rem)]">
         <div className="flex flex-col items-center gap-1 text-center">
           <h3 className="text-2xl font-bold tracking-tight">You have no assets in your watchlist</h3>
           <p className="text-sm text-muted-foreground">

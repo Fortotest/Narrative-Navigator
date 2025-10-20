@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '@/lib/firebase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Bot } from 'lucide-react';
+import { auth } from '@/lib/firebase/client';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 48 48" {...props}>
@@ -65,9 +65,15 @@ export default function LoginPage() {
     }
   };
 
-  if (loading || user) {
+  if (loading) {
     return null;
   }
+  
+  if (user) {
+    router.push('/');
+    return null;
+  }
+
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2 xl:min-h-screen">
