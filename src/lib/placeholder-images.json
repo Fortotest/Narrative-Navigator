@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "login-hero",
+      "description": "Abstract crypto data visualization",
+      "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBkYXRhfGVufDB8fHx8MTc2MDg2NTUxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract data"
+    }
+  ]
 }
